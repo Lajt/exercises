@@ -6,23 +6,24 @@ class App extends React.Component{
 
   state = {
     cards: [
-      { 
-        name: 'Lajt',
-        company: 'none',
-        avatar: 'http://placehold.it/75x75'
-      },
-      { 
-        name: 'Lajt2',
-        company: 'none2',
-        avatar: 'http://placehold.it/75x75'
-      }
+      // { 
+      //   name: 'Lajt',
+      //   company: 'none',
+      //   avatar: 'http://placehold.it/75x75'
+      // }
     ]
+  }
+
+  addNewCard = (cardInfo) => {
+    //console.log(cardInfo)
+    //this.state.cards.push(cardInfo);
+    this.setState((last) => ({card: last.cards.push(cardInfo)}))
   }
 
 	render(){
   	return(
     	<div>
-        <Form fn={this.pusher}/>
+        <Form onSubmit={this.addNewCard}/>
       	<CardList cards={this.state.cards} />
     	</div>
     )
@@ -32,7 +33,7 @@ class App extends React.Component{
 const Card = (props) => {
 	return (
   	<div style={{margin: '1em'}}>
-  	  <img src={props.avatar}></img>
+  	  <img style={{maxWidth: '75px'}} src={props.avatar}></img>
       <div style={{display: 'inline-block', marginLeft: 10}}>
       	<div style={{fontSize: '1.25em', fontWeight: 'bold'}}>{props.name}</div>
         <div>{props.company}</div>
@@ -57,7 +58,9 @@ class Form extends React.Component{
     //console.log(this.state.userName)
     axios.get(`https://api.github.com/users/${this.state.userName}`)
       .then(resp => {
-        console.log(resp)
+        //console.log(resp)
+        this.props.onSubmit({name: resp.data.name, company: resp.data.company, avatar: resp.data.avatar_url})
+        this.setState({userName: ''})
       })
   }
 
@@ -66,7 +69,7 @@ class Form extends React.Component{
       <div>
         <form onSubmit={this.handleSubmit}>
           <input type="text" 
-          value={this.state.username} 
+          value={this.state.userName} 
           onChange={(event) => this.setState({userName: event.target.value}) }
           placeholder="Github username" required/>
           <button type="submit">Add card</button>
