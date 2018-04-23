@@ -21,7 +21,7 @@ const Button = (props) => {
 
   return (
     <div className="col-2">
-      <button>=</button>
+      <button disabled={props.selectedNumbers.length === 0}>=</button>
     </div>
   )
 }
@@ -73,22 +73,23 @@ class Game extends React.Component{
 
   unselectNumber = (num) => {
 
-    //this.setState((prev) => ({selectedNumbers: prev.selectedNumbers.filter((e) => e !== num)}))
-    console.log(num)
+    this.setState((prev) => ({selectedNumbers: prev.selectedNumbers.filter((e) => e !== num)}))
   }
 
 	render(){
+    const {selectedNumbers, numberOfStars} = this.state;
+
   	return(
     	<div className="container">
     	  <h3>PlayNine</h3>
         <hr />
         <div className="row">
-          <Stars numberOfStars={this.state.numberOfStars}/>
-          <Button />
-          <Answer selectedNumbers={this.state.selectedNumbers} unselectNumber={this.unselectNumber}/>
+          <Stars numberOfStars={numberOfStars}/>
+          <Button selectedNumbers={selectedNumbers}/>
+          <Answer selectedNumbers={selectedNumbers} unselectNumber={this.unselectNumber}/>
         </div>
         <br />
-        <Numbers selectedNumbers={this.state.selectedNumbers} selectNumber={this.selectNumber}/>
+        <Numbers selectedNumbers={selectedNumbers} selectNumber={this.selectNumber}/>
     	</div>
     )
   }
