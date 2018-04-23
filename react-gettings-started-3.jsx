@@ -31,7 +31,7 @@ const Answer = (props) => {
   return (
     <div className="col-5">
       {props.selectedNumbers.map((num, i) => 
-        <span key={i}>{num}</span>
+        <span key={i} onClick={() => props.unselectNumber(num)}>{num}</span>
       )}
     </div>
   )
@@ -65,11 +65,16 @@ class Game extends React.Component{
   }
 
   selectNumber = (num) => {
-
     if(this.state.selectedNumbers.indexOf(num) >= 0)
       return;
 
     this.setState((prev) => ({selectedNumbers: prev.selectedNumbers.concat(num)}))
+  }
+
+  unselectNumber = (num) => {
+
+    //this.setState((prev) => ({selectedNumbers: prev.selectedNumbers.filter((e) => e !== num)}))
+    console.log(num)
   }
 
 	render(){
@@ -80,7 +85,7 @@ class Game extends React.Component{
         <div className="row">
           <Stars numberOfStars={this.state.numberOfStars}/>
           <Button />
-          <Answer selectedNumbers={this.state.selectedNumbers}/>
+          <Answer selectedNumbers={this.state.selectedNumbers} unselectNumber={this.unselectNumber}/>
         </div>
         <br />
         <Numbers selectedNumbers={this.state.selectedNumbers} selectNumber={this.selectNumber}/>
