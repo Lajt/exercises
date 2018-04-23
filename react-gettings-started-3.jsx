@@ -4,13 +4,12 @@
 
 
 const Stars = (props) => {
-  const numberOfStars = 1 + Math.floor(Math.random()*9);
-
+  //const numberOfStars = 1 + Math.floor(Math.random()*9);
 
   return (
     <div className="col-5">
       {
-        _.range(numberOfStars).map((num, i) =>
+        _.range(props.numberOfStars).map((num, i) =>
         <i key={i} className="fa fa-star"></i>
       )
       }
@@ -19,6 +18,7 @@ const Stars = (props) => {
 }
 
 const Button = (props) => {
+
   return (
     <div className="col-2">
       <button>=</button>
@@ -27,11 +27,12 @@ const Button = (props) => {
 }
 
 const Answer = (props) => {
+
   return (
     <div className="col-5">
-      {props.selectedNumbers.map((num, i) => {
+      {props.selectedNumbers.map((num, i) => 
         <span key={i}>{num}</span>
-      })}
+      )}
     </div>
   )
 }
@@ -47,7 +48,7 @@ const Numbers = (props) => {
     <div className="card text-center">
       <div>
         {Numbers.list.map((number, i) => 
-            <span key={i} className={numberClassName(number)}>{number}</span>
+            <span key={i} className={numberClassName(number)} onClick={() => props.selectNumber(number)}>{number}</span>
           )}
       </div>
     </div>
@@ -59,7 +60,16 @@ Numbers.list = _.range(1,10);
 
 class Game extends React.Component{
   state = {
-    selectedNumbers: [2, 4]
+    selectedNumbers: [2, 4],
+    numberOfStars: 1 + Math.floor(Math.random()*9)
+  }
+
+  selectNumber = (num) => {
+
+    if(this.state.selectedNumbers.indexOf(num) >= 0)
+      return;
+
+    this.setState((prev) => ({selectedNumbers: prev.selectedNumbers.concat(num)}))
   }
 
 	render(){
@@ -68,12 +78,12 @@ class Game extends React.Component{
     	  <h3>PlayNine</h3>
         <hr />
         <div className="row">
-          <Stars />
+          <Stars numberOfStars={this.state.numberOfStars}/>
           <Button />
           <Answer selectedNumbers={this.state.selectedNumbers}/>
         </div>
         <br />
-        <Numbers selectedNumbers={this.state.selectedNumbers}/>
+        <Numbers selectedNumbers={this.state.selectedNumbers} selectNumber={this.selectNumber}/>
     	</div>
     )
   }
