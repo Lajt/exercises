@@ -19,9 +19,28 @@ const Stars = (props) => {
 
 const Button = (props) => {
 
+  let button;
+  switch(props.answerIsCorrect){
+    case true:
+      button = 
+        <button className="btn btn-success">
+          <i className="fa fa-check"></i>
+        </button>;
+      break;
+    case false:
+      button = 
+          <button className="btn btn-danger">
+            <i className="fa fa-times"></i>
+          </button>;
+      break;
+    default:
+      button = <button className="btn" disabled={props.selectedNumbers.length === 0}>=</button>;
+      break;
+  }
+
   return (
     <div className="col-2">
-      <button disabled={props.selectedNumbers.length === 0}>=</button>
+      {button}
     </div>
   )
 }
@@ -61,7 +80,8 @@ Numbers.list = _.range(1,10);
 class Game extends React.Component{
   state = {
     selectedNumbers: [2, 4],
-    numberOfStars: 1 + Math.floor(Math.random()*9)
+    numberOfStars: 1 + Math.floor(Math.random()*9),
+    answerIsCorrect: null
   }
 
   selectNumber = (num) => {
@@ -76,8 +96,15 @@ class Game extends React.Component{
     this.setState((prev) => ({selectedNumbers: prev.selectedNumbers.filter((e) => e !== num)}))
   }
 
+  checkAnswer = () => {
+
+    this.setState((prev) => ({
+      answerIsCorrect: prev.numberOfStars === prev.selectedNumbers.reduce((acc, num) => acc+num, 0)
+    }))
+  }
+
 	render(){
-    const {selectedNumbers, numberOfStars} = this.state;
+    const {selectedNumbers, numberOfStars, answerIsCorrect} = this.state;
 
   	return(
     	<div className="container">
@@ -85,11 +112,15 @@ class Game extends React.Component{
         <hr />
         <div className="row">
           <Stars numberOfStars={numberOfStars}/>
-          <Button selectedNumbers={selectedNumbers}/>
-          <Answer selectedNumbers={selectedNumbers} unselectNumber={this.unselectNumber}/>
+          <Button selectedNumbers={selectedNumbers}
+                  checkAnswer={this.checkAnswer}
+                  answerIsCorrect={answerIsCorrect}/>
+          <Answer selectedNumbers={selectedNumbers} 
+                  unselectNumber={this.unselectNumber}/>
         </div>
         <br />
-        <Numbers selectedNumbers={selectedNumbers} selectNumber={this.selectNumber}/>
+        <Numbers selectedNumbers={selectedNumbers} 
+                  selectNumber={this.selectNumber}/>
     	</div>
     )
   }
