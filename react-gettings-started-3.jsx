@@ -22,7 +22,7 @@ var possibleCombinationSum = function(arr, n) {
 const Timeout = (props) => {
 
   return(
-    <div className="text-center">
+    <div className="text-center" hidden={props.doneStatus}>
       <h3>
         {props.timeout}
       </h3>
@@ -38,6 +38,8 @@ const DoneFrame = (props) => {
       {props.doneStatus}
       </h3>
       <button className="btn btn-secondary" onClick={props.resetGame}>Play Again</button>
+      < hr/>
+      Your Score: {props.score}
     </div>
   )
 }
@@ -143,7 +145,8 @@ class Game extends React.Component{
     usedNumbers: [],
     redraws: 5,
     doneStatus: '',
-    timeout : 10
+    timeout : 10,
+    score : 0
   });
   state = Game.initialState();
 
@@ -176,10 +179,15 @@ class Game extends React.Component{
     }))
   }
   checkAnswer = () => {
-    // TODO: game status?
     this.setState((prev) => ({
       answerIsCorrect: prev.numberOfStars === prev.selectedNumbers.reduce((acc, num) => acc+num, 0)
-    }))
+    }), this.addScore)
+  }
+  addScore = () => {
+    if(this.state.answerIsCorrect)
+      this.setState((prev) => ({
+        score: prev.score + prev.timeout
+      }))
   }
   acceptAnswer = () => {
     this.setState((prev) =>({
@@ -197,7 +205,8 @@ class Game extends React.Component{
       numberOfStars: Game.randomNumber(),
       answerIsCorrect: null,
       selectedNumbers: [],
-      redraws: prev.redraws - 1
+      redraws: prev.redraws - 1,
+      timeout: 10
     }), this.updateDoneStatus)
   }
   possibleSoluton = ({numberOfStars, usedNumbers}) => {
@@ -227,14 +236,16 @@ class Game extends React.Component{
       usedNumbers,
       redraws,
       doneStatus,
-      timeout
+      timeout,
+      score
     } = this.state;
 
   	return(
     	<div className="container">
     	  <h3>PlayNine</h3>
         <hr />
-        <Timeout timeout={timeout}/>
+        <Timeout timeout={timeout}
+                 doneStatus={doneStatus} />
         <div className="row">
           <Stars numberOfStars={numberOfStars}/>
           <Button selectedNumbers={selectedNumbers}
@@ -249,7 +260,8 @@ class Game extends React.Component{
         <br />
         {doneStatus ? 
           <DoneFrame doneStatus={doneStatus} 
-                     resetGame={this.resetGame} /> : 
+                     resetGame={this.resetGame}
+                     score = {score} /> : 
           <Numbers selectedNumbers={selectedNumbers} 
           selectNumber={this.selectNumber}
           usedNumbers={usedNumbers}/>}

@@ -1,3 +1,12 @@
+.mountNode {
+  color: #333;
+  min-height: 500px;
+  background-color: gray;
+}
+
+.container {
+  max-width: 600px;
+}
 
 .fa-star{
   margin: 0.5em;
