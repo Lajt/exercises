@@ -19,6 +19,17 @@ var possibleCombinationSum = function(arr, n) {
   return false;
 };
 
+const Timeout = (props) => {
+
+  return(
+    <div className="text-center">
+      <h3>
+        {props.timeout}
+      </h3>
+    </div>
+  )
+}
+
 const DoneFrame = (props) => {
 
   return (
@@ -131,9 +142,22 @@ class Game extends React.Component{
     answerIsCorrect: null,
     usedNumbers: [],
     redraws: 5,
-    doneStatus: ''
+    doneStatus: '',
+    timeout : 10
   });
   state = Game.initialState();
+
+  test = setInterval(() => {
+    if(this.state.timeout === 0)
+    {
+      this.updateDoneStatus()
+    }
+    else{
+      this.setState((prev) => ({
+        timeout: prev.timeout - 1
+      }))
+    }
+  }, 1000);
 
   selectNumber = (num) => {
     if(this.state.selectedNumbers.indexOf(num) >= 0)
@@ -162,7 +186,8 @@ class Game extends React.Component{
       usedNumbers: prev.usedNumbers.concat(prev.selectedNumbers),
       selectedNumbers: [],
       answerIsCorrect: null,
-      numberOfStars: Game.randomNumber()
+      numberOfStars: Game.randomNumber(),
+      timeout: 10
     }), this.updateDoneStatus)
   }
   redraw = () => {
@@ -185,7 +210,8 @@ class Game extends React.Component{
     this.setState((prev) => {
       if(prev.usedNumbers.length === 9)
         return {doneStatus: 'Done! Good Job!'}
-      if(prev.redraws <= 0 && !this.possibleSoluton(prev))
+      if( (prev.redraws <= 0 && !this.possibleSoluton(prev) ) ||
+           prev.timeout === 0)
         return {doneStatus: 'Game Over!'}
     })
   }
@@ -200,13 +226,15 @@ class Game extends React.Component{
       answerIsCorrect,
       usedNumbers,
       redraws,
-      doneStatus
+      doneStatus,
+      timeout
     } = this.state;
 
   	return(
     	<div className="container">
     	  <h3>PlayNine</h3>
         <hr />
+        <Timeout timeout={timeout}/>
         <div className="row">
           <Stars numberOfStars={numberOfStars}/>
           <Button selectedNumbers={selectedNumbers}
