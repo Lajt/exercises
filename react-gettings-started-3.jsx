@@ -37,9 +37,10 @@ const DoneFrame = (props) => {
       <h3>
       {props.doneStatus}
       </h3>
+      Your Score: {props.score}
+      <br />
       <button className="btn btn-secondary" onClick={props.resetGame}>Play Again</button>
       < hr/>
-      Your Score: {props.score}
     </div>
   )
 }
@@ -186,7 +187,7 @@ class Game extends React.Component{
   addScore = () => {
     if(this.state.answerIsCorrect)
       this.setState((prev) => ({
-        score: prev.score + prev.timeout
+        score: prev.score + prev.timeout * (prev.redraws + 1)
       }))
   }
   acceptAnswer = () => {
