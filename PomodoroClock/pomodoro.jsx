@@ -24,7 +24,11 @@ const Button = (props) => {
 	return(
   	<div>
   	  <div className="text-center">
-      	<button onClick={() => props.handleClick()} className="btn btn-secondary start">START</button>
+        <button onClick={() => props.handleClick()} 
+                className="btn btn-secondary start"
+                disabled={props.working}>
+          START
+        </button>
       </div>
   	</div>
   )
@@ -34,7 +38,7 @@ const Setter = (props) => {
 	return(
   	<div className="col col-sm-6 text-center">
     	<h3>{props.title}</h3>
-      <span>{parseInt(props.time/60)}</span>
+      <span>{props.time}</span>
       <br />
       <button className="btn btn-success" 
       				onClick={() => (props.setTime(true, props.title))}
@@ -69,13 +73,24 @@ const Battery = (props) => {
 
 class App extends React.Component{
   state = {
-    workTime: 25*60,
-    breakTime: 5*60,
+    workTime: 25,
+    breakTime: 5,
     progress: 0,
-    timer: null
+    timer: null,
+    countdown: 25*60,
+    working: false,
+    status: 'break'
   }
   
   setTime = (state, name) => {
+
+    if(this.state.timer != null){
+      this.setState((prev) => {
+        clearInterval(prev.timer);
+        return {timer: null, working: false}
+      })
+    }
+
   	this.setState((prev) =>{
     	if(name === "break"){
       	let val = prev.breakTime;
@@ -87,18 +102,24 @@ class App extends React.Component{
         let val = prev.workTime;
         if(val <= 1 && state === false)
             return;
-        return {workTime: (state ? val + 1 : val -1)}
+        let tm = state ? val + 1 : val -1;
+        return {workTime: tm, countdown: tm*60}
       }
     })
   }
   
   handleClick = () => {
-  	if(this.state.timer != null)
+  	if(this.state.timer != null){
+      console.log(this.state.timer)
+    }
   
-  	console.log(this.state.timer)
-  	this.setState({
-  	timer: setInterval(() => this.tick(), 1000)
-  	})
+  	this.setState((prev) => ({
+      timer: setInterval(() => this.tick(), 1000),
+      working: true,
+      progress: 0,
+      countdown: prev.workTime * 60,
+      status: 'work'
+    }))
   }
   
   componentDidMount() {
@@ -108,16 +129,20 @@ class App extends React.Component{
     // );
   }
   componentWillUnmount() {
-    clearInterval(this.timerID);
+    //clearInterval(this.timerID);
   }
   tick() {
   	if(this.state.progress >= 100){
-    	clearInterval(this.state.timer);
+      clearInterval(this.state.timer);
+      this.setState({working: false})
       console.log('pomodoro!')
+
       return;
     }
     this.setState((prev) => {
-    	let newProgress = parseFloat((prev.progress + 100/prev.workTime).toFixed(2));
+
+      let oneTick = 100 / (prev.workTime * 60)
+    	let newProgress = parseFloat((prev.progress + oneTick).toFixed(2));
     
     	return { progress: newProgress > 100 ? 100 : newProgress, countdown: prev.countdown-1 };
     });
@@ -133,9 +158,10 @@ class App extends React.Component{
           </div>
           <Battery progress={this.state.progress}/>
           <br />
-          <Timer cloak = {this.state.workTime}/>
+          <Timer cloak = {this.state.countdown}/>
           <br />
-          <Button handleClick={this.handleClick} />
+          <Button handleClick={this.handleClick}
+                  working={this.state.working} />
         </div>
       </div>
     )

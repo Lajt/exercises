@@ -3,7 +3,7 @@ const today = new Date();
 
 let lajt = today.getTime() + (25 * 1000)
 
-const workTime = 25;
+const workTime = 25*60;
 let tickAmount = 100;
 let progress = 0;
 
@@ -17,7 +17,7 @@ setInterval(() => {
   
   progress += tickAmount/workTime;
   progress = parseFloat(progress.toFixed(2))
-  float.parse((prev.progress + workTime/100).toFixed(2))
+  //parseFloat((prev.progress + workTime/100).toFixed(2))
 }, 1000)
 
 
